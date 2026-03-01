@@ -26,14 +26,13 @@ jobs:
       - name: Build packages
         run: bun run build
 
-      - name: Setup Node.js for NPM
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
-
-      - name: Configure npm authentication
-        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+      - name: Prepare dependencies
+        run: |
+          # Replace workspace:* with actual version for npm compatibility
+          sed -i 's/"workspace:\*"/"^${{ inputs.version }}"/g' packages/cli/package.json
+          npm pkg set dependencies.@mddb/core=${{ inputs.version }} --workspace=packages/sdk
+          npm pkg set dependencies.@mddb/core=${{ inputs.version }} --workspace=packages/cli
+          npm pkg set dependencies.@mddb/sdk=${{ inputs.version }} --workspace=packages/cli
 
       - name: Update versions
         run: |
@@ -41,14 +40,26 @@ jobs:
           npm version ${{ inputs.version }} --no-git-tag-version --workspace=packages/sdk
           npm version ${{ inputs.version }} --no-git-tag-version --workspace=packages/cli
 
+      - name: Setup Node.js for NPM
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Publish @mddb/core
         run: npm publish --access public --workspace=packages/core
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @mddb/sdk
         run: npm publish --access public --workspace=packages/sdk
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @mddb/cli
         run: npm publish --access public --workspace=packages/cli
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit version updates
         run: |
