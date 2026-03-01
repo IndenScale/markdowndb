@@ -1,0 +1,18 @@
+{
+  "name": "@mddb/sdk",
+  "version": "0.1.0",
+  "description": "MarkdownDB SDK for TypeScript",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@mddb/core": "workspace:*"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  }
+}
