@@ -66,6 +66,7 @@ MarkdownDB 将文件系统映射为层级数据库结构：
 4. 任一表缺失全局字段 → **启动失败**
 
 **错误示例**：
+
 ```text
 Error: Table 'blog' validation failed
   Missing required global field: 'updated_at'
@@ -109,17 +110,17 @@ Error: Table 'blog' validation failed
 
 ### 字段类型
 
-| 类型 | 描述 | 示例值 |
-|------|------|--------|
-| `string` | 字符串 | `"Hello"` |
-| `number` | 数字 | `42` |
-| `boolean` | 布尔 | `true` |
-| `datetime` | ISO 8601 日期时间 | `"2026-03-01T00:00:00Z"` |
-| `array` | 数组 | `["a", "b"]` |
-| `object` | 对象 | `{"key": "value"}` |
-| `reference` | 外键引用 | `"john-doe"`（指向其他表记录） |
-| `markdown` | Markdown 内容 | `"**bold** text"` |
-| `code` | 代码块 | `{"language": "ts", "code": "..."}` |
+| 类型        | 描述              | 示例值                              |
+| ----------- | ----------------- | ----------------------------------- |
+| `string`    | 字符串            | `"Hello"`                           |
+| `number`    | 数字              | `42`                                |
+| `boolean`   | 布尔              | `true`                              |
+| `datetime`  | ISO 8601 日期时间 | `"2026-03-01T00:00:00Z"`            |
+| `array`     | 数组              | `["a", "b"]`                        |
+| `object`    | 对象              | `{"key": "value"}`                  |
+| `reference` | 外键引用          | `"john-doe"`（指向其他表记录）      |
+| `markdown`  | Markdown 内容     | `"**bold** text"`                   |
+| `code`      | 代码块            | `{"language": "ts", "code": "..."}` |
 
 ## Markdown → Object 映射规则
 
@@ -199,17 +200,16 @@ content-## {heading}-{language}-{hash}
 
 #### 示例
 
-```markdown
+````markdown
 ## 正文
 
 这是正文。
 
 ```typescript
 const x = 1;
-```text
+```
 
 继续正文。
-```
 
 ```typescript
 {
@@ -220,22 +220,24 @@ const x = 1;
   }
 }
 ```
+````
 
 #### 多个代码块
 
 同一 heading 下的多个代码块各自独立提取：
 
-```markdown
+`````markdown
 ## 示例
 
-```shell
+````shell
 npm install
-```text
+```
 
 ```typescript
 console.log("hello");
-```text
 ```
+````
+`````
 
 ```typescript
 {
@@ -255,12 +257,13 @@ console.log("hello");
 
 语言标识符缺失时，使用 `text` 作为默认值：
 
-```markdown
+````markdown
 ## 配置
 
 ```
 plain text
-```text
+```
+````
 
 ```typescript
 {
@@ -270,7 +273,7 @@ plain text
     "code": "plain text"
   }
 }
-```text
+```
 
 ## 约束与限制
 
@@ -284,11 +287,11 @@ title: "Invalid"
 ---
 
 没有 heading 的内容。
-```text
+```
 
 ### 2. 重复 Heading
 
-同一文件内重复的 heading 文本，后续字段名添加数字后缀：
+同一文件内重复的 heading 文本，后续字段名添加内容 hash 后缀（前 6 位 SHA-256）：
 
 ```markdown
 ## 示例
@@ -298,30 +301,30 @@ title: "Invalid"
 ## 示例
 
 第二段。
-```text
+```
 
 ```typescript
 {
   "content-## 示例": "第一段。",
-  "content-## 示例-2": "第二段。"
+  "content-## 示例-a1b2c3": "第二段。"
 }
-```text
+```
 
 ### 3. 特殊字符处理
 
 Heading 文本中的特殊字符保留原样作为字段名的一部分：
 
-```markdown
+````markdown
 ## API / Auth
 
 内容。
-```text
 
 ```typescript
 {
   "content-## API / Auth": "内容。"
 }
-```text
+```
+````
 
 ### 4. 嵌套 Heading
 
@@ -335,13 +338,13 @@ Heading 文本中的特殊字符保留原样作为字段名的一部分：
 ### 子章节
 
 子章节内容。
-```text
+```
 
 ```typescript
 {
   "content-## 正文": "正文开头。\n\n### 子章节\n\n子章节内容。"
 }
-```text
+```
 
 ## AST 处理
 
