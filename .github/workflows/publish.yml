@@ -32,35 +32,36 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Update versions and publish @mddb/core
-        working-directory: packages/core
-        run: |
-          # Update version
-          npm version ${{ inputs.version }} --no-git-tag-version
-          # Publish
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Update versions and publish @mddb/sdk
+      - name: Prepare @mddb/sdk dependencies
         working-directory: packages/sdk
-        run: |
-          # Update version and replace workspace dependency
-          npm version ${{ inputs.version }} --no-git-tag-version
-          npm pkg set dependencies.@mddb/core=${{ inputs.version }}
-          # Publish
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm pkg set dependencies.@mddb/core=${{ inputs.version }}
 
-      - name: Update versions and publish @mddb/cli
+      - name: Prepare @mddb/cli dependencies
         working-directory: packages/cli
         run: |
-          # Update version and replace workspace dependencies
-          npm version ${{ inputs.version }} --no-git-tag-version
           npm pkg set dependencies.@mddb/core=${{ inputs.version }}
           npm pkg set dependencies.@mddb/sdk=${{ inputs.version }}
-          # Publish
+
+      - name: Publish @mddb/core
+        working-directory: packages/core
+        run: |
+          npm version ${{ inputs.version }} --no-git-tag-version
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @mddb/sdk
+        working-directory: packages/sdk
+        run: |
+          npm version ${{ inputs.version }} --no-git-tag-version
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @mddb/cli
+        working-directory: packages/cli
+        run: |
+          npm version ${{ inputs.version }} --no-git-tag-version
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
