@@ -87,11 +87,99 @@ const example = "code block";
 
 ## 安装
 
+### CLI（推荐）
+
+```bash
+bun install -g @mddb/cli
+```
+
+### SDK
+
 ```bash
 bun install markdowndb
 ```
 
-## 使用方法
+## 使用方式
+
+### 方式一：CLI
+
+#### 初始化数据库
+
+```bash
+# 在当前目录初始化
+mddb init
+
+# 指定目录初始化
+mddb init ./my-content
+
+# 使用全局 Schema 初始化
+mddb init ./my-content --global-schema ./global-schema.json
+```
+
+#### 查看数据库状态
+
+```bash
+mddb status
+
+# 输出示例：
+# Database Status
+# ────────────────────────────────────────
+# Global Schema:
+#   Required fields: title, created_at, updated_at
+# 
+# Tables (2):
+#   • blog: 5 records
+#   • authors: 3 records
+```
+
+#### 管理表
+
+```bash
+# 列出所有表
+mddb table list
+
+# 创建新表（需要提供 schema.json）
+mddb table create blog --schema ./blog-schema.json
+
+# 查看表结构
+mddb table schema blog
+```
+
+#### 管理记录
+
+```bash
+# 列出表中的记录
+mddb record list blog
+mddb record list blog --limit 20 --offset 10
+mddb record list blog --format json
+
+# 获取单个记录
+mddb record get blog hello-world
+mddb record get blog hello-world --format yaml
+
+# 创建记录
+mddb record create blog new-post \
+  --data '{"title": "New Post", "tags": ["draft"]}'
+
+# 更新记录
+mddb record update blog new-post \
+  --data '{"tags": ["draft", "review"]}'
+
+# 删除记录
+mddb record delete blog new-post
+```
+
+#### 查询与验证
+
+```bash
+# 条件查询
+mddb query blog --where '{"published": true}' --order created_at --direction desc
+
+# 验证整个数据库
+mddb validate
+```
+
+### 方式二：TypeScript SDK
 
 ```typescript
 import { MarkdownDatabase } from 'markdowndb';
