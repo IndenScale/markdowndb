@@ -20,9 +20,11 @@
 
 ```text
 my-content/                    ← 数据库 (Database)
-├── schema.json               ← 数据库级 Schema 定义
+├── .mddb/                   ← 数据库元数据目录
+│   └── config.json         ← 数据库配置（版本、ID 等）
+├── schema.json              ← 数据库级 Schema（全局策略）
 ├── blog/                     ← 表 (Table: blog)
-│   ├── schema.json          ← 表级 Schema（可选，覆盖/继承）
+│   ├── schema.json          ← 表级 Schema（必须包含全局字段）
 │   ├── hello-world.md       ← 记录 (Record)
 │   └── another-post.md
 └── authors/                  ← 表 (Table: authors)
