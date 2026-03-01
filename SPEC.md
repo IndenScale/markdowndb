@@ -134,13 +134,18 @@ count: 42
 nested:
   key: value
 ---
+
+## 信息
+
+元数据示例。
 ```
 
 ```typescript
 {
   "title": "Hello",
   "count": 42,
-  "nested": { "key": "value" }
+  "nested": { "key": "value" },
+  "content-## 信息": "元数据示例。"
 }
 ```
 
