@@ -1,4 +1,4 @@
-# MarkdownObject
+# MarkdownDB
 
 将 Markdown 文件系统作为 Schema 驱动的数据库使用。
 
@@ -86,13 +86,13 @@ const example = "code block";
 ## 安装
 
 ```bash
-bun install markdownobject
+bun install markdowndb
 ```
 
 ## 使用方法
 
 ```typescript
-import { MarkdownDatabase } from 'markdownobject';
+import { MarkdownDatabase } from 'markdowndb';
 
 const db = new MarkdownDatabase('./my-content');
 

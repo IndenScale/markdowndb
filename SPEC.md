@@ -1,8 +1,8 @@
-# MarkdownObject Specification
+# MarkdownDB Specification
 
 ## 目录结构
 
-MarkdownObject 将文件系统映射为层级数据库结构：
+MarkdownDB 将文件系统映射为层级数据库结构：
 
 ```text
 {database_root}/              ← 数据库 (Database)
@@ -283,7 +283,7 @@ Heading 文本中的特殊字符保留原样作为字段名的一部分：
 
 ## AST 处理
 
-MarkdownObject 使用成熟的 Markdown AST 库（如 `remark` / `unified`）处理解析，确保正确处理：
+MarkdownDB 使用成熟的 Markdown AST 库（如 `remark` / `unified`）处理解析，确保正确处理：
 
 - 嵌套列表
 - 表格
