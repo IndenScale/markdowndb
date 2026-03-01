@@ -1,0 +1,26 @@
+{
+  "name": "@mddb/core",
+  "version": "0.1.0",
+  "description": "MarkdownDB core engine",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "mdast-util-from-markdown": "^2.0.3",
+    "mdast-util-to-markdown": "^2.1.2",
+    "mdast-util-to-string": "^4.0.0",
+    "unist-util-visit": "^5.1.0",
+    "yaml": "^2.8.2"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.0",
+    "@types/unist": "^3.0.0"
+  },
+  "exports": {
+    ".": "./dist/index.js"
+  }
+}
