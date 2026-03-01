@@ -26,40 +26,34 @@ jobs:
       - name: Build packages
         run: bun run build
 
-      - name: Prepare dependencies
+      - name: Update versions and dependencies
         run: |
-          # Replace workspace:* with actual version for npm compatibility
+          # Update versions in all packages
+          cd packages/core && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
+          cd packages/sdk && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
+          cd packages/cli && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
+          
+          # Replace workspace:* with actual version for inter-package dependencies
+          sed -i 's/"workspace:\*"/"^${{ inputs.version }}"/g' packages/sdk/package.json
           sed -i 's/"workspace:\*"/"^${{ inputs.version }}"/g' packages/cli/package.json
-          npm pkg set dependencies.@mddb/core=${{ inputs.version }} --workspace=packages/sdk
-          npm pkg set dependencies.@mddb/core=${{ inputs.version }} --workspace=packages/cli
-          npm pkg set dependencies.@mddb/sdk=${{ inputs.version }} --workspace=packages/cli
-
-      - name: Update versions
-        run: |
-          npm version ${{ inputs.version }} --no-git-tag-version --workspace=packages/core
-          npm version ${{ inputs.version }} --no-git-tag-version --workspace=packages/sdk
-          npm version ${{ inputs.version }} --no-git-tag-version --workspace=packages/cli
-
-      - name: Setup Node.js for NPM
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org'
 
       - name: Publish @mddb/core
-        run: npm publish --access public --workspace=packages/core
+        run: bun publish --access public
+        working-directory: packages/core
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @mddb/sdk
-        run: npm publish --access public --workspace=packages/sdk
+        run: bun publish --access public
+        working-directory: packages/sdk
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @mddb/cli
-        run: npm publish --access public --workspace=packages/cli
+        run: bun publish --access public
+        working-directory: packages/cli
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Commit version updates
         run: |
