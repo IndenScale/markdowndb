@@ -26,16 +26,15 @@ jobs:
       - name: Build packages
         run: bun run build
 
-      - name: Update versions and dependencies
+      - name: Update versions
         run: |
           # Update versions in all packages
           cd packages/core && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
           cd packages/sdk && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
           cd packages/cli && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
-          
-          # Replace workspace:* with actual version for inter-package dependencies
-          sed -i 's/"workspace:\*"/"^${{ inputs.version }}"/g' packages/sdk/package.json
-          sed -i 's/"workspace:\*"/"^${{ inputs.version }}"/g' packages/cli/package.json
+
+      # Publish in dependency order: core -> sdk -> cli
+      # Bun automatically replaces workspace: protocol with actual versions
 
       - name: Publish @mddb/core
         run: bun publish --access public
