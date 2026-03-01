@@ -116,6 +116,7 @@ Error: Table 'blog' validation failed
 | `reference` | 外键引用          | `"john-doe"`（指向其他表记录）      |
 | `markdown`  | Markdown 内容     | `"**bold** text"`                   |
 | `code`      | 代码块            | `{"language": "ts", "code": "..."}` |
+| `wiki_link` | Wiki Link 引用    | `"authors/john-doe"`                |
 
 ## Markdown → Object 映射规则
 
@@ -269,6 +270,87 @@ plain text
 }
 ```
 
+### 5. Wiki Link 引用
+
+支持 Wiki Link 语法建立记录间引用关系。
+
+#### 语法格式
+
+```markdown
+[[id]]                    ← 同表引用
+table/id]]               ← 跨表引用
+[[table/id|显示文本]]     ← 带显示文本
+```
+
+#### 映射规则
+
+Wiki Link 在内容中替换为占位符，同时提取为关系字段：
+
+````markdown
+## 正文
+
+请看[[authors/john-doe|作者介绍]]了解更多。
+````
+
+```typescript
+{
+  "content-## 正文": "请看{{WIKI_LINK:authors/john-doe|作者介绍}}了解更多。",
+  "wiki_links": [
+    {
+      "target": "authors/john-doe",
+      "table": "authors",
+      "id": "john-doe",
+      "label": "作者介绍"
+    }
+  ]
+}
+```
+
+#### 占位符格式
+
+```text
+{{WIKI_LINK:table/id|label}}
+```
+
+- `table`: 目标表名（省略时默认为当前表）
+- `id`: 目标记录 title（主键）
+- `label`: 显示文本（可选，默认为 id）
+
+#### 与 reference 类型的关系
+
+Wiki Link 与 frontmatter 中的 `reference` 类型**语义等价**，都是建立记录间关系：
+
+```markdown
+---
+title: "hello-world"
+author: "john-doe"           ← reference 类型：外键关系
+---
+
+## 正文
+
+详情见[[authors/john-doe|作者]]。
+```
+
+- `reference` 类型：在 schema 层声明的结构化关系
+- Wiki Link：在内容层建立的上下文关系
+
+#### 死链检测
+
+验证时检查所有 Wiki Link 目标是否存在：
+
+```text
+Error: Wiki Link validation failed in 'blog/hello-world.md'
+  Broken link: [[authors/non-existent]]
+  Target table: authors
+  Target id: non-existent
+```
+
+死链会导致**验证失败**，必须在修复后才能写入或查询。
+
+#### 循环引用
+
+Wiki Link 允许循环引用（A → B → A），查询时由调用方处理循环。
+
 ## 约束与限制
 
 ### 1. 必须有标题
@@ -354,7 +436,7 @@ title: "hello-world"
 ...
 ```
 
-### 6. 重复 Heading
+### 9. 重复 Heading
 
 同一文件内重复的 heading 文本，后续字段名添加内容 hash 后缀（前 6 位 SHA-256）：
 
@@ -375,7 +457,7 @@ title: "hello-world"
 }
 ```
 
-### 4. 特殊字符处理
+### 7. 特殊字符处理
 
 Heading 文本中的特殊字符保留原样作为字段名的一部分：
 
@@ -391,7 +473,7 @@ Heading 文本中的特殊字符保留原样作为字段名的一部分：
 }
 ```
 
-### 5. 嵌套 Heading
+### 8. 嵌套 Heading
 
 嵌套 heading 作为父 heading 内容的一部分，不单独提取：
 
