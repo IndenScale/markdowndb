@@ -6,7 +6,9 @@ MarkdownDB 将文件系统映射为层级数据库结构：
 
 ```text
 {database_root}/              ← 数据库 (Database)
-├── schema.json              ← 数据库级 Schema（可选）
+├── .mddb/                   ← 数据库元数据目录
+│   └── config.json         ← 数据库配置（版本、ID 等）
+├── schema.json              ← 数据库级 Schema（全局策略）
 ├── {table_name}/            ← 表 (Table)
 │   ├── schema.json         ← 表级 Schema（必需）
 │   └── {record_name}.md    ← 记录 (Record)
@@ -15,18 +17,74 @@ MarkdownDB 将文件系统映射为层级数据库结构：
 
 ### 命名规则
 
-- **Database Root**: 任意目录名
+- **Database Root**: 任意目录名，包含 `.mddb/` 子目录标识这是一个 MarkdownDB 实例
 - **Table Name**: 目录名，作为表标识符
 - **Record Name**: 文件名（不含 `.md` 后缀），作为记录主键
 
-## Schema 定义
+## Schema 层级
 
-### schema.json 结构
+### 数据库级 Schema（全局策略）
+
+数据库根目录的 `schema.json` 定义**所有表必须包含的全局字段**。这是一个强制策略而非可继承模板。
+
+```json
+{
+  "fields": {
+    "id": { "type": "string", "required": true },
+    "created_at": { "type": "datetime", "required": true },
+    "updated_at": { "type": "datetime", "required": true }
+  }
+}
+```
+
+### 表级 Schema（必需）
+
+每个表目录必须包含 `schema.json`，且**必须显式重复声明数据库级 Schema 中的所有字段**。
 
 ```json
 {
   "name": "blog",
   "fields": {
+    "id": { "type": "string", "required": true },
+    "created_at": { "type": "datetime", "required": true },
+    "updated_at": { "type": "datetime", "required": true },
+    "title": { "type": "string", "required": true },
+    "published_at": { "type": "datetime" },
+    "author": { "type": "reference", "table": "authors" },
+    "content-## 摘要": { "type": "markdown" }
+  }
+}
+```
+
+### 验证规则
+
+启动时，系统执行以下验证：
+
+1. 读取数据库级 `schema.json` 得到「强制字段集合」
+2. 检查每个表级 `schema.json` 的 `fields` 对象
+3. 确认表级字段包含强制字段集合的**完整超集**（字段名和类型必须一致）
+4. 任一表缺失全局字段 → **启动失败**
+
+**错误示例**：
+```text
+Error: Table 'blog' validation failed
+  Missing required global field: 'updated_at'
+  Location: my-content/blog/schema.json
+```
+
+## Schema 定义
+
+### schema.json 结构
+
+表级 `schema.json` 必须包含 `name` 和 `fields`，其中 `fields` 必须包含数据库级 Schema 定义的所有全局字段。
+
+```json
+{
+  "name": "blog",
+  "fields": {
+    "id": { "type": "string", "required": true },
+    "created_at": { "type": "datetime", "required": true },
+    "updated_at": { "type": "datetime", "required": true },
     "title": {
       "type": "string",
       "required": true
