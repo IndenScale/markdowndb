@@ -30,7 +30,7 @@ MarkdownDB 将文件系统映射为层级数据库结构：
 ```json
 {
   "fields": {
-    "id": { "type": "string", "required": true },
+    "title": { "type": "string", "required": true },
     "created_at": { "type": "datetime", "required": true },
     "updated_at": { "type": "datetime", "required": true }
   }
@@ -45,7 +45,7 @@ MarkdownDB 将文件系统映射为层级数据库结构：
 {
   "name": "blog",
   "fields": {
-    "id": { "type": "string", "required": true },
+    "title": { "type": "string", "required": true },
     "created_at": { "type": "datetime", "required": true },
     "updated_at": { "type": "datetime", "required": true },
     "title": { "type": "string", "required": true },
@@ -83,13 +83,9 @@ Error: Table 'blog' validation failed
 {
   "name": "blog",
   "fields": {
-    "id": { "type": "string", "required": true },
+    "title": { "type": "string", "required": true },
     "created_at": { "type": "datetime", "required": true },
     "updated_at": { "type": "datetime", "required": true },
-    "title": {
-      "type": "string",
-      "required": true
-    },
     "published_at": {
       "type": "datetime"
     },
@@ -288,15 +284,21 @@ title: "Invalid"
 没有 heading 的内容。
 ```
 
-### 2. 文件名与 title 一致性
+### 2. title 作为主键
+
+`title` 字段是记录的**主键**，具有以下约束：
+
+#### 2.1 文件名与 title 一致
 
 记录的文件名（不含 `.md` 后缀）**必须**与 front matter 中的 `title` 字段完全一致。
 
 **示例**：
-- 文件 `hello-world.md` 中的 front matter 必须有 `title: "hello-world"`
-- 文件 `my-post.md` 中的 front matter 必须有 `title: "my-post"`
+
+- 文件 `hello-world.md` ↔ `title: "hello-world"`
+- 文件 `2024年度报告.md` ↔ `title: "2024年度报告"`（允许中文）
 
 **验证失败示例**：
+
 ```markdown
 ---
 title: "Hello World"
@@ -306,15 +308,25 @@ title: "Hello World"
 
 ...
 ```
-文件名是 `hello-world.md`，但 title 是 `"Hello World"` → **验证失败**
 
-### 3. title 字段与一级标题互斥
+文件名 `hello-world.md` 但 `title: "Hello World"` → **验证失败**
+
+#### 2.2 禁止 id 字段
+
+Schema 中**不允许**定义 `id` 字段，避免与 `title` 主键混淆。
+
+#### 2.3 表内唯一
+
+同一表内所有记录的 `title` 必须**唯一**。重复 title → **写入失败**。
+
+### 3. title 与一级标题互斥
 
 如果 front matter 中包含 `title` 字段，则 Markdown 内容中**不允许出现一级标题**（`#`）。
 
-**原因**：title 已定义在 front matter 中，一级标题会造成语义重复。
+**原因**：title 是主键（文档标识），一级标题会造成语义重复。
 
 **无效示例**：
+
 ```markdown
 ---
 title: "hello-world"
@@ -326,7 +338,9 @@ title: "hello-world"
 
 ...
 ```
+
 **有效示例**：
+
 ```markdown
 ---
 title: "hello-world"
