@@ -226,10 +226,10 @@ const x = 1;
 
 同一 heading 下的多个代码块各自独立提取：
 
-`````markdown
+````markdown
 ## 示例
 
-````shell
+```shell
 npm install
 ```
 
@@ -237,7 +237,6 @@ npm install
 console.log("hello");
 ```
 ````
-`````
 
 ```typescript
 {
@@ -289,7 +288,60 @@ title: "Invalid"
 没有 heading 的内容。
 ```
 
-### 2. 重复 Heading
+### 2. 文件名与 title 一致性
+
+记录的文件名（不含 `.md` 后缀）**必须**与 front matter 中的 `title` 字段完全一致。
+
+**示例**：
+- 文件 `hello-world.md` 中的 front matter 必须有 `title: "hello-world"`
+- 文件 `my-post.md` 中的 front matter 必须有 `title: "my-post"`
+
+**验证失败示例**：
+```markdown
+---
+title: "Hello World"
+---
+
+## 内容
+
+...
+```
+文件名是 `hello-world.md`，但 title 是 `"Hello World"` → **验证失败**
+
+### 3. title 字段与一级标题互斥
+
+如果 front matter 中包含 `title` 字段，则 Markdown 内容中**不允许出现一级标题**（`#`）。
+
+**原因**：title 已定义在 front matter 中，一级标题会造成语义重复。
+
+**无效示例**：
+```markdown
+---
+title: "hello-world"
+---
+
+# Hello World
+
+## 内容
+
+...
+```
+**有效示例**：
+```markdown
+---
+title: "hello-world"
+---
+
+## 摘要
+
+...
+
+## 正文
+
+...
+```
+
+### 6. 重复 Heading
 
 同一文件内重复的 heading 文本，后续字段名添加内容 hash 后缀（前 6 位 SHA-256）：
 
@@ -310,23 +362,23 @@ title: "Invalid"
 }
 ```
 
-### 3. 特殊字符处理
+### 4. 特殊字符处理
 
 Heading 文本中的特殊字符保留原样作为字段名的一部分：
 
-````markdown
+```markdown
 ## API / Auth
 
 内容。
+```
 
 ```typescript
 {
   "content-## API / Auth": "内容。"
 }
 ```
-````
 
-### 4. 嵌套 Heading
+### 5. 嵌套 Heading
 
 嵌套 heading 作为父 heading 内容的一部分，不单独提取：
 
