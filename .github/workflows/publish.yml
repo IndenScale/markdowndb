@@ -28,10 +28,10 @@ jobs:
 
       - name: Update versions
         run: |
-          # Update versions in all packages
-          cd packages/core && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
-          cd packages/sdk && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
-          cd packages/cli && npm version ${{ inputs.version }} --no-git-tag-version && cd ../..
+          # Update versions using npm pkg set (avoids npm version workspace issues)
+          npm pkg set version=${{ inputs.version }} --workspace=packages/core
+          npm pkg set version=${{ inputs.version }} --workspace=packages/sdk
+          npm pkg set version=${{ inputs.version }} --workspace=packages/cli
 
       # Publish in dependency order: core -> sdk -> cli
       # Bun automatically replaces workspace: protocol with actual versions
