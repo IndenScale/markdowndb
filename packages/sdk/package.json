@@ -10,7 +10,7 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@mddb/core": "^0.1.1"
+    "@mddb/core": "workspace:*"
   },
   "exports": {
     ".": "./dist/index.js"
