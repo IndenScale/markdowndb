@@ -48,7 +48,6 @@ MarkdownDB 将文件系统映射为层级数据库结构：
     "title": { "type": "string", "required": true },
     "created_at": { "type": "datetime", "required": true },
     "updated_at": { "type": "datetime", "required": true },
-    "title": { "type": "string", "required": true },
     "published_at": { "type": "datetime" },
     "author": { "type": "reference", "table": "authors" },
     "content-## 摘要": { "type": "markdown" }
