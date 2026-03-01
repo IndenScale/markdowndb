@@ -1,0 +1,10 @@
+{
+  "name": "authors",
+  "fields": {
+    "title": { "type": "string", "required": true },
+    "created_at": { "type": "datetime", "required": true },
+    "updated_at": { "type": "datetime", "required": true },
+    "email": { "type": "string" },
+    "bio": { "type": "markdown" }
+  }
+}

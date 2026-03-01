@@ -1,0 +1,11 @@
+{
+  "name": "blog",
+  "fields": {
+    "title": { "type": "string", "required": true },
+    "created_at": { "type": "datetime", "required": true },
+    "updated_at": { "type": "datetime", "required": true },
+    "published_at": { "type": "datetime" },
+    "author": { "type": "reference", "table": "authors" },
+    "tags": { "type": "array", "items": { "type": "string" } }
+  }
+}

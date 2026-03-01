@@ -1,0 +1,9 @@
+{
+  "name": "references",
+  "fields": {
+    "title": { "type": "string", "required": true },
+    "created_at": { "type": "datetime", "required": true },
+    "updated_at": { "type": "datetime", "required": true },
+    "source_doc": { "type": "reference", "table": "docs" }
+  }
+}
