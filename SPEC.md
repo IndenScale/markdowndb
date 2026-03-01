@@ -256,7 +256,6 @@ console.log("hello");
 ```
 plain text
 ```text
-```
 
 ```typescript
 {
@@ -266,7 +265,7 @@ plain text
     "code": "plain text"
   }
 }
-```
+```text
 
 ## 约束与限制
 
@@ -280,7 +279,7 @@ title: "Invalid"
 ---
 
 没有 heading 的内容。
-```
+```text
 
 ### 2. 重复 Heading
 
@@ -294,14 +293,14 @@ title: "Invalid"
 ## 示例
 
 第二段。
-```
+```text
 
 ```typescript
 {
   "content-## 示例": "第一段。",
   "content-## 示例-2": "第二段。"
 }
-```
+```text
 
 ### 3. 特殊字符处理
 
@@ -311,13 +310,13 @@ Heading 文本中的特殊字符保留原样作为字段名的一部分：
 ## API / Auth
 
 内容。
-```
+```text
 
 ```typescript
 {
   "content-## API / Auth": "内容。"
 }
-```
+```text
 
 ### 4. 嵌套 Heading
 
@@ -331,13 +330,13 @@ Heading 文本中的特殊字符保留原样作为字段名的一部分：
 ### 子章节
 
 子章节内容。
-```
+```text
 
 ```typescript
 {
   "content-## 正文": "正文开头。\n\n### 子章节\n\n子章节内容。"
 }
-```
+```text
 
 ## AST 处理
 
