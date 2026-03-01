@@ -10,7 +10,7 @@ Code Block 处理遵循**提取-占位-独立存储**原则，确保：
 
 ## 处理流程
 
-```
+```text
 原始 Markdown
     ↓
 提取 Code Block → 计算 hash → 生成占位符
@@ -36,10 +36,8 @@ Code Block 处理遵循**提取-占位-独立存储**原则，确保：
 ```typescript
 const x = 1;
 ```
-````
 
 继续正文。
-
 ````
 
 ### 步骤 2：计算 Hash
@@ -47,12 +45,8 @@ const x = 1;
 对代码内容计算 SHA-256，取前 6 位：
 
 ```typescript
-const hash = crypto
-  .createHash('sha256')
-  .update(code)
-  .digest('hex')
-  .slice(0, 6);  // "a1b2c3"
-````
+const hash = crypto.createHash("sha256").update(code).digest("hex").slice(0, 6); // "a1b2c3"
+```
 
 ### 步骤 3：生成占位符
 
@@ -96,17 +90,13 @@ const hash = crypto
 
 ### 无语言标识符
 
-```markdown
-
+````markdown
 ```
-
 plain text
-
 ```
+````
 
-```
-
-处理为 `{{CODE_BLOCK:text-{hash}}}`，语言默认为 `text`。
+处理为`{{CODE_BLOCK:text-{hash}}}`，语言默认为`text`。
 
 ### 多个代码块
 
@@ -118,15 +108,14 @@ plain text
 ```shell
 npm install
 ```
-````
 
 ```typescript
 console.log("hello");
 ```
-
-`````
+````
 
 生成：
+
 - `{{CODE_BLOCK:shell-d4e5f6}}`
 - `{{CODE_BLOCK:typescript-a1b2c3}}`
 
@@ -137,15 +126,12 @@ console.log("hello");
 ````markdown
 ## 配置
 
-```markdown
 示例代码块：
+
 ```typescript
 const x = 1;
-`````
-
 ```
-
-```
+````
 
 外层使用 4 个反引号，内层代码块正常提取。
 
